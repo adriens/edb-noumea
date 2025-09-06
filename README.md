@@ -1,7 +1,5 @@
-<<<<<<< HEAD
-# edb-noumea
-SDK Python pour connaître la Qualité des Eaux de Baignade à Nouméa
-=======
+![Built with uv](https://img.shields.io/badge/Built%20with-uv-blueviolet?logo=python&logoColor=white)
+
 # Qualité des Eaux de Baignade à Nouméa
 
 Ce projet Python fournit un outil simple pour scraper les données sur la qualité des eaux de baignade à Nouméa depuis le site officiel de la ville (`noumea.nc`). Il extrait les informations et les présente sous forme de tableau dans le terminal.
@@ -12,7 +10,8 @@ Il se base sur les données de https://www.noumea.nc/noumea-pratique/salubrite-p
 
 Avant de commencer, assurez-vous d'avoir installé `uv`, le gestionnaire de paquets et d'environnements virtuels Python.
 
-- [Instructions d'installation de uv](https://github.com/astral-sh/uv)
+
+
 
 ## Installation
 
@@ -75,15 +74,14 @@ source .venv/bin/activate
 
 Deux fichiers PNG seront générés dans le dossier courant :
 
-- `ecoli_levels.png` : graphique des niveaux d'E. coli par point de prélèvement
-- `entero_levels.png` : graphique des niveaux d'Entérocoques par point de prélèvement
 
 Vous pouvez ouvrir ces fichiers pour visualiser les résultats détaillés des analyses.
 
----
 ## Utilisation en tant que Bibliothèque
 
 Vous pouvez également importer les fonctions dans vos propres scripts Python pour une intégration plus poussée.
+
+Installer 
 
 ### Obtenir le résumé
 
@@ -176,9 +174,4 @@ else:
 
 ## Dépendances
 
-- `requests`: Pour effectuer les requêtes HTTP.
-- `beautifulsoup4`: Pour l'analyse du code HTML.
-- `pandas`: Pour la création et la manipulation des DataFrames.
-- `lxml`: Utilisé comme parseur par BeautifulSoup pour de meilleures performances.
-- `tabula-py`: Pour l'extraction de tableaux depuis des fichiers PDF. **Note :** `tabula-py` requiert que [Java](https://www.java.com/) soit installé sur votre système.
->>>>>>> cfd27fd (Initial commit du projet edb-noumea)
+
