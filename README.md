@@ -172,6 +172,4 @@ else:
 ...
 ```
 
-## Dépendances
-
 
