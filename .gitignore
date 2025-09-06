@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -205,3 +206,34 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+=======
+# Environnements virtuels
+.venv/
+
+# Fichiers temporaires Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Fichiers de logs
+*.log
+
+# Fichiers de distribution
+*.egg-info/
+dist/
+build/
+
+# Fichiers générés
+*.png
+
+# Notebooks temporaires
+.ipynb_checkpoints/
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# Autres
+.env
+>>>>>>> cfd27fd (Initial commit du projet edb-noumea)
