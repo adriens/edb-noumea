@@ -1,3 +1,19 @@
+import pandas as pd
+
+@staticmethod
+def get_sites():
+    """
+    Retourne un DataFrame avec le mapping site/plage/gmaps_url.
+    """
+    data = [
+        {"site": "PLAGE DE LA BAIE DES CITRONS", "plage": "Plage de la baie des Citrons", "gmaps_url": "https://maps.app.goo.gl/P2SP3oWuQbxd1sCH9"},
+        {"site": "PLAGE DE L'ANSE VATA", "plage": "Plage de l'Anse-Vata", "gmaps_url": "https://maps.app.goo.gl/xAUdky47DqEjSF4R8"},
+        {"site": "PLAGE DE LA POINTE MAGNIN", "plage": "Plage de la pointe Magnin", "gmaps_url": "https://maps.app.goo.gl/Wf69LoGgc894MtQy6"},
+        {"site": "PLAGE DE LA PROMENADE PIERRE VERNIER", "plage": "Plage de la promenade Pierre-Vernier", "gmaps_url": "https://maps.app.goo.gl/bNocZKVVMYk3HFYs9"},
+        {"site": "PLAGE DE MAGENTA", "plage": "Plage de Magenta", "gmaps_url": "https://maps.app.goo.gl/yFwgG2BCV1sEtPWP6"},
+        {"site": "PLAGE DU KUENDU BEACH", "plage": "Plage du Kuendu Beach", "gmaps_url": "https://maps.app.goo.gl/oGY6Hy4KCXJWxqfL9"},
+    ]
+    return pd.DataFrame(data)
 def get_pdf_url():
     """
     Alias public pour obtenir l'URL du dernier PDF d'analyses détaillées.
