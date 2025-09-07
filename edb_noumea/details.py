@@ -91,6 +91,9 @@ def get_detailed_results():
     cleaned_df['id_point_prelevement'] = split_points[0].str.strip()
     cleaned_df['desc_point_prelevement'] = split_points[1].str.strip() if split_points.shape[1] > 1 else ''
 
+    # Conversion explicite de la colonne 'date' en type date Python
+    cleaned_df['date'] = pd.to_datetime(cleaned_df['date'], format='%d/%m/%Y', errors='coerce').dt.date
+
     return cleaned_df
 
 if __name__ == "__main__":
