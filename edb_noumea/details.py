@@ -85,6 +85,12 @@ def get_detailed_results():
     cleaned_df['e_coli_npp_100ml'] = pd.to_numeric(cleaned_df['e_coli_npp_100ml'], errors='coerce')
     cleaned_df['enterocoques_npp_100ml'] = pd.to_numeric(cleaned_df['enterocoques_npp_100ml'], errors='coerce')
     cleaned_df.fillna(0, inplace=True)
+
+    # Split de la colonne point_de_prelevement
+    split_points = cleaned_df['point_de_prelevement'].str.split(',', n=1, expand=True)
+    cleaned_df['id_point_prelevement'] = split_points[0].str.strip()
+    cleaned_df['desc_point_prelevement'] = split_points[1].str.strip() if split_points.shape[1] > 1 else ''
+
     return cleaned_df
 
 if __name__ == "__main__":
@@ -93,5 +99,7 @@ if __name__ == "__main__":
 
     # Afficher le DataFrame s'il a été créé avec succès
     if detailed_df is not None:
-        print("\n📋 Voici les détails des derniers relevés :")
-        print(detailed_df.to_string())
+        print("\n📋 Voici les détails des derniers relevés (toutes colonnes) :")
+        print(detailed_df)
+        print("\nColonnes du DataFrame :")
+        print(list(detailed_df.columns))
