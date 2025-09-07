@@ -1,3 +1,13 @@
+### Obtenir l'URL du PDF utilisé
+
+Pour obtenir l'URL du dernier PDF d'analyses détaillées utilisé par le scraper :
+
+```python
+from edb_noumea.details import get_pdf_url
+
+pdf_url = get_pdf_url()
+print(f"URL du PDF utilisé : {pdf_url}")
+```
 ![Built with uv](https://img.shields.io/badge/Built%20with-uv-blueviolet?logo=python&logoColor=white)
 
 # Qualité des Eaux de Baignade à Nouméa
