@@ -1,3 +1,8 @@
+def get_pdf_url():
+    """
+    Alias public pour obtenir l'URL du dernier PDF d'analyses détaillées.
+    """
+    return get_latest_pdf_url()
 
 import pandas as pd
 import tabula
