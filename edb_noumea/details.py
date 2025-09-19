@@ -126,16 +126,19 @@ def get_detailed_results():
     if "heure" in cleaned_df.columns:
         cleaned_df["heure"] = cleaned_df["heure"].astype(str)
 
+
     # Nettoyer et convertir les colonnes e_coli_npp_100ml et enterocoques_npp_100ml
-    # Appliquer la même technique à l'avant-dernière colonne (e_coli_npp_100ml)
     if "e_coli_npp_100ml" in cleaned_df.columns:
         cleaned_df["e_coli_npp_100ml"] = cleaned_df["e_coli_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
         cleaned_df["e_coli_npp_100ml"] = pd.to_numeric(cleaned_df["e_coli_npp_100ml"], errors="coerce").astype('Int64')
 
-    # Appliquer la même technique à la dernière colonne (enterocoques_npp_100ml)
     if "enterocoques_npp_100ml" in cleaned_df.columns:
         cleaned_df["enterocoques_npp_100ml"] = cleaned_df["enterocoques_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
         cleaned_df["enterocoques_npp_100ml"] = pd.to_numeric(cleaned_df["enterocoques_npp_100ml"], errors="coerce").astype('Int64')
+
+    # Convertir la colonne 'date' en datetime (format jour/mois/année)
+    if "date" in cleaned_df.columns:
+        cleaned_df["date"] = pd.to_datetime(cleaned_df["date"], format="%d/%m/%Y", errors="coerce")
 
     return cleaned_df
 
