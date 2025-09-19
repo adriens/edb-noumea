@@ -1,0 +1,42 @@
+version: '3'
+tasks:
+  kaggle-download:
+    desc: Télécharger les fichiers du notebook Kaggle et copier la base DuckDB
+    cmds:
+      - kaggle kernels output adriensales/qualit-eaux-de-baignade-noum-a -p ./kaggle_downloads
+      - cp ./kaggle_downloads/edb-noumea.duckdb ./edb-noumea.duckdb
+    generates:
+      - kaggle_downloads/
+      - ./edb-noumea.duckdb
+
+  pdf:
+    desc: Générer le rapport au format PDF
+    cmds:
+      - Rscript -e "rmarkdown::render('rapport_plages_noumea.Rmd', output_format = 'pdf_document')"
+    sources:
+      - rapport_plages_noumea.Rmd
+    generates:
+      - rapport_plages_noumea.pdf
+
+  html:
+    desc: Générer le rapport au format HTML
+    cmds:
+      - Rscript -e "rmarkdown::render('rapport_plages_noumea.Rmd', output_format = 'html_document')"
+    sources:
+      - rapport_plages_noumea.Rmd
+    generates:
+      - rapport_plages_noumea.html
+
+  word:
+    desc: Générer le rapport au format Word
+    cmds:
+      - Rscript -e "rmarkdown::render('rapport_plages_noumea.Rmd', output_format = 'word_document')"
+    sources:
+      - rapport_plages_noumea.Rmd
+    generates:
+      - rapport_plages_noumea.docx
+
+  clean:
+    desc: Nettoyer les fichiers générés et temporaires
+    cmds:
+      - rm -rf edb-noumea.duckdb ./kaggle_downloads *.html *.pdf *.docx
