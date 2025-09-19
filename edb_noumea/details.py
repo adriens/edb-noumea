@@ -90,30 +90,52 @@ def get_detailed_results():
 
     print(f"✅ {len(tables)} tableau(x) trouvé(s). Affichage du premier.")
     df = tables[0]
+    print("\n--- Aperçu du tableau extrait (toutes colonnes) ---")
+    with pd.option_context('display.max_columns', None):
+        print(df)
+    print("\nColonnes:", list(df.columns))
+    print("Shape:", df.shape)
 
-    # --- Nettoyage du DataFrame ---
-    columns_to_keep = {
-        df.columns[0]: "site",
-        df.columns[1]: "point_de_prelevement",
-        df.columns[2]: "date",
-        df.columns[4]: "heure",
-        df.columns[6]: "e_coli_npp_100ml",
-        df.columns[9]: "enterocoques_npp_100ml"
-    }
-    cleaned_df = df[columns_to_keep.keys()].copy()
-    cleaned_df.rename(columns=columns_to_keep, inplace=True)
-    cleaned_df.replace({'<10': 0}, inplace=True)
-    cleaned_df['e_coli_npp_100ml'] = pd.to_numeric(cleaned_df['e_coli_npp_100ml'], errors='coerce')
-    cleaned_df['enterocoques_npp_100ml'] = pd.to_numeric(cleaned_df['enterocoques_npp_100ml'], errors='coerce')
-    cleaned_df.fillna(0, inplace=True)
+    # Sélection dynamique des colonnes bactéries par nom
+    # Recherche des colonnes contenant les mots-clés
+    e_coli_col = next((col for col in df.columns if "Escherichia" in str(col) or "coli" in str(col)), None)
+    entero_col = next((col for col in df.columns if "Entérocoques" in str(col)), None)
 
-    # Split de la colonne point_de_prelevement
-    split_points = cleaned_df['point_de_prelevement'].str.split(',', n=1, expand=True)
-    cleaned_df['id_point_prelevement'] = split_points[0].str.strip()
-    cleaned_df['desc_point_prelevement'] = split_points[1].str.strip() if split_points.shape[1] > 1 else ''
+    if e_coli_col is None or entero_col is None:
+        print(f"❌ Colonnes bactéries non trouvées dans le tableau extrait. Colonnes disponibles : {list(df.columns)}")
+        return None
 
-    # Conversion explicite de la colonne 'date' en type date Python
-    cleaned_df['date'] = pd.to_datetime(cleaned_df['date'], format='%d/%m/%Y', errors='coerce').dt.date
+    # Sélectionne les 4 premières colonnes + colonnes bactéries trouvées
+    selected_cols = [df.columns[0], df.columns[1], df.columns[2], df.columns[4], e_coli_col, entero_col]
+    cleaned_df = df.loc[:, selected_cols].copy()
+    cleaned_df.columns = [
+        "site",
+        "point_de_prelevement",
+        "date",
+        "heure",
+        "e_coli_npp_100ml",
+        "enterocoques_npp_100ml"
+    ]
+
+    # Ajoute deux colonnes issues du split de 'point_de_prelevement'
+    split_points = cleaned_df["point_de_prelevement"].str.split(",", n=1, expand=True)
+    cleaned_df["id_point_prelevement"] = split_points[0].str.strip()
+    cleaned_df["desc_point_prelevement"] = split_points[1].str.strip() if split_points.shape[1] > 1 else ""
+
+    # S'assurer que la colonne 'heure' est bien présente et de type string
+    if "heure" in cleaned_df.columns:
+        cleaned_df["heure"] = cleaned_df["heure"].astype(str)
+
+    # Nettoyer et convertir les colonnes e_coli_npp_100ml et enterocoques_npp_100ml
+    # Appliquer la même technique à l'avant-dernière colonne (e_coli_npp_100ml)
+    if "e_coli_npp_100ml" in cleaned_df.columns:
+        cleaned_df["e_coli_npp_100ml"] = cleaned_df["e_coli_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
+        cleaned_df["e_coli_npp_100ml"] = pd.to_numeric(cleaned_df["e_coli_npp_100ml"], errors="coerce").astype('Int64')
+
+    # Appliquer la même technique à la dernière colonne (enterocoques_npp_100ml)
+    if "enterocoques_npp_100ml" in cleaned_df.columns:
+        cleaned_df["enterocoques_npp_100ml"] = cleaned_df["enterocoques_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
+        cleaned_df["enterocoques_npp_100ml"] = pd.to_numeric(cleaned_df["enterocoques_npp_100ml"], errors="coerce").astype('Int64')
 
     return cleaned_df
 
@@ -121,9 +143,12 @@ if __name__ == "__main__":
     # Obtenir le DataFrame des résultats détaillés
     detailed_df = get_detailed_results()
 
-    # Afficher le DataFrame s'il a été créé avec succès
+    # Afficher seulement les colonnes demandées
     if detailed_df is not None:
-        print("\n📋 Voici les détails des derniers relevés (toutes colonnes) :")
-        print(detailed_df)
-        print("\nColonnes du DataFrame :")
-        print(list(detailed_df.columns))
+        print("\n📋 Détails synthétiques :")
+        print(detailed_df[[
+            "point_de_prelevement",
+            "date",
+            "e_coli_npp_100ml",
+            "enterocoques_npp_100ml"
+        ]])

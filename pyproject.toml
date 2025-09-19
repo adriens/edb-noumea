@@ -1,6 +1,6 @@
 [project]
 name = "edb-noumea"
-version = "0.2.11"
+version = "0.2.12"
 description = "Un scraper pour la qualité des eaux de baignade à Nouméa."
 dependencies = [
     "requests",
