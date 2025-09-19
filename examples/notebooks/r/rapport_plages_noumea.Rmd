@@ -1,8 +1,7 @@
-
 ---
 title: "Qualité des Eaux de Baignade à Nouméa"
-author: "Adrien SALES / @rastadidi / dev.to/adriens"
-date: "`r format(Sys.time(), '%d %B %Y')`"
+author: "Adrien SALES | $\\mathbb{X}$ @rastadidi | dev.to/adriens"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 output:
   pdf_document:
     latex_engine: xelatex
@@ -12,17 +11,48 @@ output:
   html_document:
     toc: false
     df_print: paged
+keywords:
+  - qualité de l’eau
+  - Nouméa
+  - plages
+  - analyses bactériologiques
+  - Escherichia coli
+  - entérocoques
+  - rapport environnemental
+  - données publiques
+  - RMarkdown
+  - visualisation
+  - santé publique
+  - Nouvelle-Calédonie
+  - open data
+  - pollution
+  - baignade
+  - monitoring environnemental
+  - data science
+  - analyse statistique
+  - démo R
 ---
 
-\begin{abstract}
-Ce rapport présente une synthèse claire et visuelle de la qualité des eaux de baignade à Nouméa, 
-asée sur les derniers relevés disponibles.
-Il propose une vue d’ensemble du statut sanitaire officiel des plages, ainsi que des analyses
-détaillées des concentrations en bactéries E. coli et Enterocoques par point de prélèvement.
 
-\textbf{L’objectif est d’informer efficacement les usagers sur les zones de baignade les plus sûres
-et d’identifier rapidement les situations à risque à l'aide d'Open Data.}
+\begin{abstract}
+Ce rapport généré de manière automatique - à l'aide de logiciel libre - présente une synthèse claire et visuelle
+de la qualité des eaux de baignade à Nouméa, basée sur les derniers relevés disponibles.
+
+Il propose une vue d’ensemble originale du statut sanitaire officiel des plages
+(autorisation de la baignade et relevés), ainsi que des analyses détaillées des
+ concentrations en bactéries E. coli et Enterocoques par point de prélèvement.\\
+
+L’objectif - prinicpalement à but de sensiblisation -  est d’informer efficacement les usagers
+sur les zones de baignade les plus sûres \textbf{mais avant tout d'illustrer très concrétement l'intérêt
+de partager ces données de manière interopérable (dataset, API, SDK)... et donc permettre aux citoyens
+de contribuer avec leurs compétences au développement de services à valeur ajoutée pour la communauté en
+rendant la ville de Nouméa plus "smart" et résiliente.}
 \end{abstract}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.35\textwidth]{drs-eaux-baignade.jpg}
+\end{figure}
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
@@ -43,7 +73,6 @@ library(knitr)
 
 \section{Introduction}
 
-La qualité de l'eau est évaluée en fonction de la concentration en bactéries E. coli (exprimée en UFC/100ml).
 Deux indicateurs bactériologiques sont pris en compte pour évaluer la qualité de l'eau :
 
 - **E. coli** (exprimé en UFC/100ml), indicateur principal de contamination fécale d'origine humaine ou animale.
@@ -97,7 +126,8 @@ dbDisconnect(con, shutdown = TRUE)
 
 \section{Statut sanitaire officiel par plage}
 
-Le tableau ci-dessous présente le statut sanitaire officiel de chaque plage, tel qu'extrait de la base de données.
+Le tableau ci-dessous présente le \href{https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade}{statut sanitaire officiel de chaque plage},
+tel qu'extrait de la base de données.
 
 ```{r synthese_statuts_resume, echo=FALSE}
 # Connexion à la base et extraction de la table 'resume'
@@ -171,5 +201,7 @@ if (exists("donnees") && nrow(donnees) > 0) {
 
 - \href{https://www.kaggle.com/code/adriensales/qualit-eaux-de-baignade-noum-a}{Notebook Kaggle : Qualité des eaux de baignade Nouméa}
 - \href{https://pypi.org/project/edb-noumea/}{Package Python \texttt{edb-noumea} sur PyPI}
+- \href{https://github.com/adriens/edb-noumea/}{Code source sur GitHub}
 
-Ces ressources permettent d'explorer, d'analyser et de réutiliser les données de qualité des eaux de baignade à Nouméa.
+Ces ressources ont pour ambition de permettre de prendre en main le code, susciter l'envie d'explorer,
+d'analyser et de réutiliser les données de qualité des eaux de baignade à Nouméa.
