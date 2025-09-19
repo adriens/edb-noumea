@@ -1,0 +1,175 @@
+
+---
+title: "Qualité des Eaux de Baignade à Nouméa"
+author: "Adrien SALES / @rastadidi / dev.to/adriens"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: false
+  word_document:
+    toc: false
+  html_document:
+    toc: false
+    df_print: paged
+---
+
+\begin{abstract}
+Ce rapport présente une synthèse claire et visuelle de la qualité des eaux de baignade à Nouméa, 
+asée sur les derniers relevés disponibles.
+Il propose une vue d’ensemble du statut sanitaire officiel des plages, ainsi que des analyses
+détaillées des concentrations en bactéries E. coli et Enterocoques par point de prélèvement.
+
+\textbf{L’objectif est d’informer efficacement les usagers sur les zones de baignade les plus sûres
+et d’identifier rapidement les situations à risque à l'aide d'Open Data.}
+\end{abstract}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Installation des packages nécessaires s'ils ne sont pas déjà installés
+packages <- c("rmarkdown", "duckdb", "DBI", "dplyr", "ggplot2", "knitr")
+new_packages <- packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new_packages)) install.packages(new_packages)
+
+# Chargement des librairies
+library(duckdb)
+library(DBI)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+
+\section{Introduction}
+
+La qualité de l'eau est évaluée en fonction de la concentration en bactéries E. coli (exprimée en UFC/100ml).
+Deux indicateurs bactériologiques sont pris en compte pour évaluer la qualité de l'eau :
+
+- **E. coli** (exprimé en UFC/100ml), indicateur principal de contamination fécale d'origine humaine ou animale.
+- **Enterocoques** (exprimés en UFC/100ml), également utilisés pour détecter la contamination fécale, notamment en milieu marin.
+
+Les seuils suivants sont utilisés pour définir le statut de la baignade selon la concentration en E. coli :
+
+*   **< 250 UFC/100ml :** Baignade **Sûre**.
+*   **250 à 500 UFC/100ml :** **Vigilance requise**.
+*   **> 500 UFC/100ml :** Baignade **Déconseillée**.
+
+---
+
+
+```{r load_data}
+# Chemin vers la base de données
+db_path <- "edb-noumea.duckdb"
+
+# Connexion à la base de données DuckDB
+con <- dbConnect(duckdb(), dbdir = db_path, read_only = TRUE)
+
+# --- ATTENTION ---
+
+# Utilisation de la table 'details' et adaptation des noms de colonnes
+table_name <- "details"
+
+if (dbExistsTable(con, table_name)) {
+  query <- paste("SELECT * FROM", table_name)
+  donnees <- dbGetQuery(con, query)
+  
+  donnees <- donnees %>%
+    mutate(
+      date_releve = as.Date(date),
+      nom_plage = site,
+      valeur_ecoli = e_coli_npp_100ml,
+      statut = case_when(
+        valeur_ecoli < 250 ~ "Sûre",
+        valeur_ecoli >= 250 & valeur_ecoli <= 500 ~ "Vigilance requise",
+        valeur_ecoli > 500 ~ "Baignade déconseillée"
+      )
+    ) %>%
+    mutate(statut = factor(statut, levels = c("Sûre", "Vigilance requise", "Baignade déconseillée")))
+
+} else {
+  donnees <- data.frame()
+  stop(paste("ERREUR : La table '", table_name, "' n'a pas été trouvée."))
+}
+
+dbDisconnect(con, shutdown = TRUE)
+```
+
+\section{Statut sanitaire officiel par plage}
+
+Le tableau ci-dessous présente le statut sanitaire officiel de chaque plage, tel qu'extrait de la base de données.
+
+```{r synthese_statuts_resume, echo=FALSE}
+# Connexion à la base et extraction de la table 'resume'
+db_path <- "edb-noumea.duckdb"
+con <- dbConnect(duckdb(), dbdir = db_path, read_only = TRUE)
+if (dbExistsTable(con, "resume")) {
+  resume <- dbReadTable(con, "resume")
+  resume <- resume %>%
+    select(Plage = plage, `Statut sanitaire` = etat_sanitaire) %>%
+    arrange(Plage)
+  kable(resume, caption = "Statut sanitaire officiel par plage.", booktabs = TRUE)
+} else {
+  cat("Aucune donnée disponible dans la table 'resume'.")
+}
+dbDisconnect(con, shutdown = TRUE)
+```
+
+\newpage
+\section{Concentrations moyennes}
+
+```{r graph_concentration_ecoli, echo=FALSE, fig.cap="Concentration moyenne d'E. coli par point de prélèvement"}
+if (exists("donnees") && nrow(donnees) > 0) {
+  donnees_bar <- donnees %>%
+    group_by(point_de_prelevement) %>%
+    summarise(moyenne_ecoli = mean(valeur_ecoli, na.rm = TRUE)) %>%
+    arrange(desc(moyenne_ecoli))
+  ggplot(donnees_bar, aes(x = reorder(point_de_prelevement, -moyenne_ecoli), y = moyenne_ecoli)) +
+    geom_bar(stat = "identity", fill = "steelblue", alpha = 0.8) +
+    geom_hline(yintercept = 250, linetype = "dashed", color = "orange") +
+    geom_hline(yintercept = 500, linetype = "dashed", color = "red") +
+    labs(
+      title = "Concentration moyenne d'E. coli par point de prélèvement",
+      x = "Point de prélèvement",
+      y = "E. coli moyen (UFC/100ml)"
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7)
+    )
+} else {
+  cat("Aucune donnée disponible pour le graphique.")
+}
+```
+
+
+```{r graph_concentration_enterocoques, echo=FALSE, fig.cap="Concentration moyenne d'Enterocoques par point de prélèvement"}
+if (exists("donnees") && nrow(donnees) > 0) {
+  donnees_bar_ent <- donnees %>%
+    group_by(point_de_prelevement) %>%
+    summarise(moyenne_ent = mean(enterocoques_npp_100ml, na.rm = TRUE)) %>%
+    arrange(desc(moyenne_ent))
+  ggplot(donnees_bar_ent, aes(x = reorder(point_de_prelevement, -moyenne_ent), y = moyenne_ent)) +
+    geom_bar(stat = "identity", fill = "darkorchid", alpha = 0.8) +
+    labs(
+      title = "Concentration moyenne d'Enterocoques par point de prélèvement",
+      x = "Point de prélèvement",
+      y = "Enterocoques moyen (UFC/100ml)"
+    ) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 7)
+    )
+} else {
+  cat("Aucune donnée disponible pour le graphique.")
+}
+```
+\newpage
+\section{Annexe technique}
+
+\textbf{Sources et outils utilisés pour ce rapport :}
+
+- \href{https://www.kaggle.com/code/adriensales/qualit-eaux-de-baignade-noum-a}{Notebook Kaggle : Qualité des eaux de baignade Nouméa}
+- \href{https://pypi.org/project/edb-noumea/}{Package Python \texttt{edb-noumea} sur PyPI}
+
+Ces ressources permettent d'explorer, d'analyser et de réutiliser les données de qualité des eaux de baignade à Nouméa.
