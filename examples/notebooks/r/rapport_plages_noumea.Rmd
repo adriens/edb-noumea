@@ -123,7 +123,7 @@ if (dbExistsTable(con, table_name)) {
 
 dbDisconnect(con, shutdown = TRUE)
 ```
-
+\newpage
 \section{Statut sanitaire officiel par plage}
 
 Le tableau ci-dessous présente le \href{https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade}{statut sanitaire officiel de chaque plage},
@@ -194,14 +194,90 @@ if (exists("donnees") && nrow(donnees) > 0) {
   cat("Aucune donnée disponible pour le graphique.")
 }
 ```
+
 \newpage
-\section{Annexe technique}
+\section{Détails des prélèvements}
+
+Le tableau ci-dessous présente les données détaillées issues de la table `details` :
+
+```{r tableau_details, echo=FALSE}
+if (exists("donnees") && nrow(donnees) > 0) {
+  library(kableExtra)
+  donnees_affichees <- donnees %>%
+    select(
+      `Point de prélèvement` = desc_point_prelevement,
+      Date = date_releve,
+      `E. coli (NPP/100mL)` = e_coli_npp_100ml,
+      `Entérocoques (NPP/100mL)` = enterocoques_npp_100ml
+    )
+  donnees_affichees <- donnees_affichees %>%
+    mutate(
+      Date = format(Date, "%Y-%m-%d"),
+      `Point de prélèvement` = stringr::str_to_sentence(`Point de prélèvement`)
+    ) %>%
+    arrange(desc(`E. coli (NPP/100mL)`))
+  # Coloration des lignes selon la valeur d'E. coli
+  lignes_rouges <- which(donnees_affichees$`E. coli (NPP/100mL)` > 500)
+  lignes_orange <- which(donnees_affichees$`E. coli (NPP/100mL)` >= 250 & donnees_affichees$`E. coli (NPP/100mL)` <= 500)
+  kable(donnees_affichees, caption = "Données détaillées des prélèvements (table details)", booktabs = TRUE) %>%
+    kable_styling(full_width = FALSE) %>%
+    row_spec(lignes_rouges, background = "#ffcccc") %>%
+    row_spec(lignes_orange, background = "#fff2cc")
+} else {
+  cat("Aucune donnée disponible dans la table 'details'.")
+}
+```
+
+\newpage
+\section{Valeurs seuils eau de baignade en mer \texttt{DASS-NC}}
+
+Cf les \href{https://dass.gouv.nc/sites/default/files/atoms/files/valeurs_seuils_eau_de_baignade_en_mer_dass-nc.pdf}{Valeurs seuils eau de baignade en mer} produites par la \href{https://dass.gouv.nc/}{\texttt{DASS-NC}}.
+
+\begin{quote}
+La Direction des Affaires Sanitaires et Sociales de Nouvelle-Calédonie utilise plusieurs valeurs seuils pour interpréter les résultats d'analyse d'une eau de baignade en mer et informe la municipalité afin qu'elle prenne des mesures pour garantir la protection des baigneurs. Ces valeurs figurent dans le tableau ci-dessous :
+\end{quote}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|p{6cm}|}
+\hline
+	\textbf{Qualification} & \textbf{E. coli (UFC/100mL)} & \textbf{Entér. (UFC/100mL)} & \textbf{Risques et recommandations sanitaires} \\
+\hline
+\cellcolor{blue!10} Bon & $\leq 100$ $^*$ & $\leq 100$ $^*$ & Eau de bonne qualité. \textbf{Risque sanitaire très faible} \\
+\cellcolor{green!10} Moyen & $> 100$ et $< 1000$ $^{**}$ & $> 100$ et $< 370$ $^{**}$ & Qualité des eaux moyenne. \textbf{Le risque sanitaire existe mais reste cependant modéré} \\
+\cellcolor{brown!10} Mauvais & $> 1000$ & $> 370$ & Mauvaise qualité des eaux. Risque sanitaire élevé. \textbf{Baignade déconseillée} \\
+\cellcolor{red!10} Fermeture obligatoire & $> 2000$ $^{***}$ & Pas de valeur impérative & Risque sanitaire avéré. \textbf{La baignade doit être interdite} \\
+\hline
+\end{tabular}
+\caption{Valeurs seuils eau de baignade en mer selon la DASS-NC}
+\end{table}
+
+
+\vspace{1em}
+
+\noindent\textbf{$^*$ Valeurs guides}~: Indiquées dans la réglementation néo-calédonienne dans la délibération 23/CP du 1er juin 2010 et l'arrêté \href{https://www.noumea.nc/sites/default/files/publications/2022-3671-arrete-interdisant-temporairement-toutes-baignades-activites-nautiques-peche-plan-eau-pl.pdf}{n°2010-3055/GNC} du 1 septembre 2010. Une valeur-guide est, conformément aux recommandations de l'OMS, un niveau de concentration de polluants dans un milieu (eau, air, air intérieur, sol) fixé dans le but d'éviter, de prévenir ou de réduire les effets nocifs sur la santé humaine, à atteindre et à ne plus dépasser dans la mesure du possible. En dessous de ce seuil, l'eau est considérée comme étant de bonne qualité.
+
+\vspace{0.5em}
+
+\noindent\textbf{$^{**}$ Valeurs AFSSET}~: Définies par l'Agence française de sécurité sanitaire de l'environnement et du travail, devenue Anses, l'Agence nationale de sécurité sanitaire de l'alimentation, de l'environnement et du travail. Ces valeurs sont proposées dans le rapport "valeurs seuils échantillon unique pour les eaux de baignade : étude de faisabilité méthodologique" de septembre 2007 repris également par le ministère français en charge de la santé pour qualifier une pollution de l'eau de baignade. Ces seuils sont une référence pour la mise en place, par la municipalité responsable de l'eau de baignade, des procédures de gestion des pollutions et pour qualifier la qualité bactériologique d'une eau de baignade.
+
+\vspace{0.5em}
+
+\noindent\textbf{$^{***}$ Valeur impérative}~: Indiquées dans la réglementation néo-calédonienne dans la délibération 23/CP du 1er juin 2010 et l'arrêté \href{https://www.noumea.nc/sites/default/files/publications/2022-3671-arrete-interdisant-temporairement-toutes-baignades-activites-nautiques-peche-plan-eau-pl.pdf}{n° 2010-3055/GNC} du 14 septembre 2010. Au-delà de la valeur impérative, la baignade doit être interdite.
+
+
+
+\newpage
+\section{Ressources}
 
 \textbf{Sources et outils utilisés pour ce rapport :}
 
 - \href{https://www.kaggle.com/code/adriensales/qualit-eaux-de-baignade-noum-a}{Notebook Kaggle : Qualité des eaux de baignade Nouméa}
 - \href{https://pypi.org/project/edb-noumea/}{Package Python \texttt{edb-noumea} sur PyPI}
 - \href{https://github.com/adriens/edb-noumea/}{Code source sur GitHub}
+- \href{https://www.youtube.com/watch?v=suVkKJ_nNGI}{Démo vidéo YouTube}
+- \href{https://dev.to/adriens/series/23296}{Nouméa Smart City Series' Articles sur dev.to}
+- \href{https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade}{Site officiel de la Ville de Nouméa}
 
 Ces ressources ont pour ambition de permettre de prendre en main le code, susciter l'envie d'explorer,
 d'analyser et de réutiliser les données de qualité des eaux de baignade à Nouméa.
