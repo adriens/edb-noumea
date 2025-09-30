@@ -36,7 +36,16 @@ tasks:
     generates:
       - rapport_plages_noumea.docx
 
+  jpeg:
+    desc: Convertir le rapport PDF en images JPEG (une par page)
+    cmds:
+      - pdftoppm -jpeg rapport_plages_noumea.pdf rapport_plages_noumea
+    sources:
+      - rapport_plages_noumea.pdf
+    generates:
+      - rapport_plages_noumea-*.jpg
+
   clean:
     desc: Nettoyer les fichiers générés et temporaires
     cmds:
-      - rm -rf edb-noumea.duckdb ./kaggle_downloads *.html *.pdf *.docx
+      - rm -rf edb-noumea.duckdb ./kaggle_downloads *.html *.pdf *.docx *.jpg
