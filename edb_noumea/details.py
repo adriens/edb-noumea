@@ -90,24 +90,40 @@ def get_detailed_results():
 
     print(f"✅ {len(tables)} tableau(x) trouvé(s). Affichage du premier.")
     df = tables[0]
+
+    # Utiliser la première ligne comme en-têtes et supprimer cette ligne du DataFrame
+    df.columns = df.iloc[0]
+    df = df[1:].reset_index(drop=True)
+
+    # Nettoyer les noms de colonnes (supprimer les retours à la ligne et les espaces superflus)
+    df.columns = df.columns.str.replace('\n', ' ', regex=False).str.strip()
+
+
+
     print("\n--- Aperçu du tableau extrait (toutes colonnes) ---")
     with pd.option_context('display.max_columns', None):
         print(df)
     print("\nColonnes:", list(df.columns))
     print("Shape:", df.shape)
 
-    # Sélection dynamique des colonnes bactéries par nom
+    # Sélection dynamique des colonnes par nom
     # Recherche des colonnes contenant les mots-clés
-    e_coli_col = next((col for col in df.columns if "Escherichia" in str(col) or "coli" in str(col)), None)
-    entero_col = next((col for col in df.columns if "Entérocoques" in str(col)), None)
+    site_col = df.columns[0]
+    point_prelevement_col = df.columns[1]
+    date_col = next((col for col in df.columns if "Date" in str(col) and "prélèvement" in str(col)), None)
+    heure_col = next((col for col in df.columns if "Heure" in str(col) and "prélèvement" in str(col)), None)
+    e_coli_col = next((col for col in df.columns if "coli" in str(col) and "NPP" in str(col)), None)
+    entero_col = next((col for col in df.columns if ("Entérocoques" in str(col) or "intestinaux" in str(col)) and "NPP" in str(col)), None)
 
-    if e_coli_col is None or entero_col is None:
-        print(f"❌ Colonnes bactéries non trouvées dans le tableau extrait. Colonnes disponibles : {list(df.columns)}")
+    # Les noms de colonnes pour 'site' et 'point de prélèvement' sont souvent
+    # non reconnus par tabula, on se base donc sur leur position (2 premières colonnes).
+    if not all([date_col, heure_col, e_coli_col, entero_col]):
+        print(f"❌ Une ou plusieurs colonnes n'ont pas été trouvées dans le tableau. Colonnes disponibles : {list(df.columns)}")
         return None
 
-    # Sélectionne les 4 premières colonnes + colonnes bactéries trouvées
-    selected_cols = [df.columns[0], df.columns[1], df.columns[2], df.columns[4], e_coli_col, entero_col]
-    cleaned_df = df.loc[:, selected_cols].copy()
+    # Sélectionne les colonnes d'intérêt
+    selected_cols = [site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]
+    cleaned_df = df[selected_cols].copy()
     cleaned_df.columns = [
         "site",
         "point_de_prelevement",
@@ -155,3 +171,8 @@ if __name__ == "__main__":
             "e_coli_npp_100ml",
             "enterocoques_npp_100ml"
         ]])
+
+        # Sauvegarder le DataFrame dans un fichier CSV
+        output_csv_path = "details.csv"
+        detailed_df.to_csv(output_csv_path, index=False)
+        print(f"\n✅ Résultats détaillés sauvegardés dans : {output_csv_path}")

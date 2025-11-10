@@ -1,5 +1,6 @@
 ![Built with uv](https://img.shields.io/badge/Built%20with-uv-blueviolet?logo=python&logoColor=white)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/edb-noumea)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/edb-noumea)](https://pypistats.org/packages/edb-noumea)
+
 
 
 
