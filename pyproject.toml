@@ -1,13 +1,14 @@
 [project]
 name = "edb-noumea"
-version = "0.2.13"
-description = "Un scraper pour la qualité des eaux de baignade à Nouméa."
+version = "0.2.14"
+description = "Un scraper pour la qualité des eaux de baignade à Nouméa. (Bug fix release: improved PDF column detection and added jpype1 dependency)"
 dependencies = [
     "requests",
     "beautifulsoup4",
     "pandas",
     "lxml",
     "tabula-py",
+    "jpype1",
     "matplotlib",
 ]
 

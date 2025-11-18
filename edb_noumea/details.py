@@ -101,13 +101,19 @@ def get_detailed_results():
     e_coli_col = next((col for col in df.columns if "Escherichia" in str(col) or "coli" in str(col)), None)
     entero_col = next((col for col in df.columns if "Entérocoques" in str(col)), None)
 
-    if e_coli_col is None or entero_col is None:
-        print(f"❌ Colonnes bactéries non trouvées dans le tableau extrait. Colonnes disponibles : {list(df.columns)}")
+    # Dynamically find all required columns
+    site_col = next((col for col in df.columns if "Nom du site" in str(col)), None)
+    point_prelevement_col = next((col for col in df.columns if "Point de prélèvement" in str(col)), None)
+    date_col = next((col for col in df.columns if "Date du prélèvement" in str(col)), None)
+    heure_col = next((col for col in df.columns if "Heure du prélèvement" in str(col)), None)
+
+    # Check if all required columns are found
+    if not all([site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]):
+        print(f"❌ Certaines colonnes requises n'ont pas été trouvées. Colonnes disponibles : {list(df.columns)}")
         return None
 
-    # Sélectionne les 4 premières colonnes + colonnes bactéries trouvées
-    selected_cols = [df.columns[0], df.columns[1], df.columns[2], df.columns[4], e_coli_col, entero_col]
-    cleaned_df = df.loc[:, selected_cols].copy()
+    # Select and rename columns to internal consistent names
+    cleaned_df = df.loc[:, [site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]].copy()
     cleaned_df.columns = [
         "site",
         "point_de_prelevement",
