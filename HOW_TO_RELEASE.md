@@ -50,6 +50,20 @@ Cette commande créera un répertoire `dist/` contenant les fichiers à publier 
 
 Utilisez `twine` pour téléverser les fichiers de distribution sur PyPI.
 
+
+#### Méthode recommandée : variable d'environnement
+
+Pour automatiser et sécuriser la publication, définissez votre token PyPI dans une variable d'environnement :
+
+```bash
+export TWINE_PASSWORD="pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+twine upload -u __token__ dist/*
+```
+
+**Ne jamais committer votre token PyPI dans le code ou dans un fichier de configuration !**
+
+Vous pouvez aussi utiliser la méthode interactive :
+
 ```bash
 twine upload dist/*
 ```
