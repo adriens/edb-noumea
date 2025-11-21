@@ -4,7 +4,7 @@
 [![Dataset](https://img.shields.io/badge/Kaggle-Dataset-blue?logo=kaggle)](https://www.kaggle.com/datasets/adriensales/qualit-des-eaux-de-baignade-nouma)
 [![Live CSV Data](https://img.shields.io/badge/GitHub-Live%20CSV%20Data-black?logo=github)](https://github.com/adriens/edb-noumea-data)
 [![Go BubbleTea TUI](https://img.shields.io/badge/Go-BubbleTea%20TUI-00ADD8?logo=go)](https://github.com/adriens/edb-noumea-tui)
-
+[![Site officiel Ville de Nouméa](https://img.shields.io/badge/Nouméa-Site%20officiel%20Ville%20de%20Nouméa-0A74DA)](https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade)
 
 
 
