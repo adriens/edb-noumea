@@ -96,23 +96,33 @@ def get_detailed_results():
     print("\nColonnes:", list(df.columns))
     print("Shape:", df.shape)
 
-    # Sélection dynamique des colonnes bactéries par nom
-    # Recherche des colonnes contenant les mots-clés
-    e_coli_col = next((col for col in df.columns if "Escherichia" in str(col) or "coli" in str(col)), None)
-    entero_col = next((col for col in df.columns if "Entérocoques" in str(col)), None)
+    # Nettoyer les noms de colonnes pour faciliter la recherche
+    def clean_col(col):
+        return str(col).replace("Unnamed:", "").replace("_", " ").replace("\xa0", " ").replace("\n", " ").replace("duprélèvement", "du prélèvement").strip().lower()
 
-    # Dynamically find all required columns
-    site_col = next((col for col in df.columns if "Nom du site" in str(col)), None)
-    point_prelevement_col = next((col for col in df.columns if "Point de prélèvement" in str(col)), None)
-    date_col = next((col for col in df.columns if "Date du prélèvement" in str(col)), None)
-    heure_col = next((col for col in df.columns if "Heure du prélèvement" in str(col)), None)
+    cleaned_columns = {clean_col(col): col for col in df.columns if not str(col).startswith("Unnamed")}
 
-    # Check if all required columns are found
-    if not all([site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]):
-        print(f"❌ Certaines colonnes requises n'ont pas été trouvées. Colonnes disponibles : {list(df.columns)}")
+    def find_col(possibles):
+        for key, col in cleaned_columns.items():
+            for possible in possibles:
+                if possible in key:
+                    return col
         return None
 
-    # Select and rename columns to internal consistent names
+    site_col = find_col(["nom du site"])
+    point_prelevement_col = find_col(["point de prélèvement"])
+    date_col = find_col(["date du prélèvement"])
+    heure_col = find_col(["heure du prélèvement", "heure"])
+    e_coli_col = find_col(["escherichia", "coli"])
+    entero_col = find_col(["entérocoques"])
+
+    # Vérification des colonnes requises
+    if not all([site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]):
+        print(f"❌ Certaines colonnes requises n'ont pas été trouvées. Colonnes disponibles : {list(df.columns)}")
+        print(f"Colonnes nettoyées : {list(cleaned_columns.keys())}")
+        return None
+
+    # Sélection et renommage
     cleaned_df = df.loc[:, [site_col, point_prelevement_col, date_col, heure_col, e_coli_col, entero_col]].copy()
     cleaned_df.columns = [
         "site",
@@ -161,3 +171,6 @@ if __name__ == "__main__":
             "e_coli_npp_100ml",
             "enterocoques_npp_100ml"
         ]])
+        # Export CSV
+        detailed_df.to_csv("details_dernier_releve.csv", index=False)
+        print("\n✅ Export CSV : details_dernier_releve.csv")
