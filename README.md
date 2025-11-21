@@ -1,5 +1,9 @@
 ![Built with uv](https://img.shields.io/badge/Built%20with-uv-blueviolet?logo=python&logoColor=white)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/edb-noumea)](https://pypistats.org/packages/edb-noumea)
+[![Open in Kaggle](https://img.shields.io/badge/Kaggle-Open%20Notebook-blue?logo=kaggle)](https://www.kaggle.com/code/adriensales/qualit-eaux-de-baignade-noum-a)
+[![Dataset](https://img.shields.io/badge/Kaggle-Dataset-blue?logo=kaggle)](https://www.kaggle.com/datasets/adriensales/qualit-des-eaux-de-baignade-nouma)
+[![Live CSV Data](https://img.shields.io/badge/GitHub-Live%20CSV%20Data-black?logo=github)](https://github.com/adriens/edb-noumea-data)
+[![Go BubbleTea TUI](https://img.shields.io/badge/Go-BubbleTea%20TUI-00ADD8?logo=go)](https://github.com/adriens/edb-noumea-tui)
 
 
 
