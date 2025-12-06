@@ -13,7 +13,7 @@ header-includes:
 ---
 
 \begin{center}
-{\bfseries\fontsize{22}{26}\selectfont SURVEILLANCE DE LA QUALITÉ DES EAUX DE BAIGNADE DE LA BAIE DES CITRONS}
+{\bfseries\fontsize{22}{26}\selectfont SURVEILLANCE DE LA QUALITÉ DES EAUX DE BAIGNADE DE LA BAIE DES CITRONS - NOUMEA}
 \end{center}
 
 
