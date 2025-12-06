@@ -68,9 +68,9 @@ if(length(ligne_resume) > 0) {
 \noindent
 
 \begin{itemize}
-  \item[\textcolor{blue}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Bleu : SATISFAISANTE
-  \item[\textcolor{yellow}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Jaune : MOYENNE (baignade déconseillée)
-  \item[\textcolor{red}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Rouge : NON SATISFAISANTE (baignade interdite)
+	\item[\textcolor{blue}{\fontsize{12}{14}\selectfont $\blacktriangleright$}] Bleu : SATISFAISANTE
+	\item[\textcolor{yellow}{\fontsize{12}{14}\selectfont $\blacktriangleright$}] Jaune : MOYENNE (baignade déconseillée)
+	\item[\textcolor{red}{\fontsize{12}{14}\selectfont $\blacktriangleright$}] Rouge : NON SATISFAISANTE (baignade interdite)
 \end{itemize}
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -109,9 +109,9 @@ knitr::asis_output(paste0(
   '\\href{https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000887542}{2006/7/CE} : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000887542}}',
   '{\\footnotesize',
   '\\begin{itemize}',
-  '  \\item SATISFAISANTE (E. coli $\\leq$ 500 NPP/100ml et Entérocoques $\\leq$ 100 NPP/100ml)',
-  '  \\item MOYENNE (E. coli $\\leq$ 1000 NPP/100ml et Entérocoques $\\leq$ 200 NPP/100ml)',
-  '  \\item NON SATISFAISANTE (E. coli $>$ 1000 NPP/100ml ou Entérocoques $>$ 200 NPP/100ml)',
+	'  \\item \\textbf{SATISFAISANTE} (E. coli $\\leq$ 500 NPP/100ml et Entérocoques $\\leq$ 100 NPP/100ml)',
+  '  \\item \\textbf{MOYENNE} (E. coli $\\leq$ 1000 NPP/100ml et Entérocoques $\\leq$ 200 NPP/100ml)',
+  '  \\item \\textbf{NON SATISFAISANTE} (E. coli $>$ 1000 NPP/100ml ou Entérocoques $>$ 200 NPP/100ml)',
   '\\end{itemize}',
   '\\vspace{1em}',
  '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}} \\textbf{𝕏}~\\href{https://x.com/rastadidi}{x.com/rastadidi}\\end{center}',
