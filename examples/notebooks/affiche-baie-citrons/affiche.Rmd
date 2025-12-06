@@ -56,7 +56,7 @@ data_resume <- read.csv(url_resume, sep = ";", fileEncoding = "UTF-8")
 ligne_resume <- grep("Plage de la baie des Citrons", data_resume$plage.etat_sanitaire)
 if(length(ligne_resume) > 0) {
 	etat_resume <- strsplit(as.character(data_resume$plage.etat_sanitaire[ligne_resume]), ",")[[1]][2]
-	knitr::asis_output(paste0("\\begin{center}\\bfseries\\fontsize{16}{18}\\selectfont", etat_resume, "\\end{center}"))
+	knitr::asis_output(paste0("\\begin{center}\\bfseries\\fontsize{16}{18}\\selectfont ", etat_resume, "\\end{center}"))
 } else {
 	knitr::asis_output("\\begin{center}\\bfseries\\fontsize{16}{18}\\selectfont Données non disponibles\\end{center}")
 }
@@ -66,9 +66,9 @@ if(length(ligne_resume) > 0) {
 \noindent
 
 \begin{itemize}
-	\item[\textcolor{blue}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Bleu : SATISFAISANTE
-	\item[\textcolor{yellow}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Jaune : MOYENNE (baignade déconseillée)
-	\item[\textcolor{red}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Rouge : NON SATISFAISANTE (baignade interdite)
+  \item[\textcolor{blue}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Bleu : SATISFAISANTE
+  \item[\textcolor{yellow}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Jaune : MOYENNE (baignade déconseillée)
+  \item[\textcolor{red}{\fontsize{18}{20}\selectfont $\blacktriangleright$}] Rouge : NON SATISFAISANTE (baignade interdite)
 \end{itemize}
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}

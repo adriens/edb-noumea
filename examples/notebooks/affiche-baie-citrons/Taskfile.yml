@@ -7,7 +7,13 @@ tasks:
     desc: "Compile le document RMarkdown en PDF au format paysage"
     cmds:
       - Rscript -e "rmarkdown::render('affiche.Rmd', output_format = 'pdf_document')"
+      - rm affiche.tex
     sources:
       - affiche.Rmd
     generates:
       - affiche.pdf
+
+  clean:
+    desc: "Supprime les fichiers générés (PDF, TEX, LOG, AUX, etc.)"
+    cmds:
+      - rm -f affiche.pdf affiche.tex
