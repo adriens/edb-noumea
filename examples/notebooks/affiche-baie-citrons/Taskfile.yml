@@ -1,19 +1,32 @@
 version: '3'
+
 tasks:
+
+  build-jpeg:
+      desc: "Génère une version JPEG du PDF dans dist à partir du PDF"
+      cmds:
+        - convert -density 300 dist/affiche.pdf -quality 90 dist/affiche.jpg
+      deps:
+        - build-pdf
+
+
   default:
     cmds:
-      - task: build
-  build:
+      - task: build-jpeg
+      
+  build-pdf:
     desc: "Compile le document RMarkdown en PDF au format paysage"
     cmds:
       - Rscript -e "rmarkdown::render('affiche.Rmd', output_format = 'pdf_document')"
+      - mkdir -p dist
+      - mv -f affiche.pdf dist/affiche.pdf
       - rm affiche.tex
     sources:
       - affiche.Rmd
     generates:
-      - affiche.pdf
+      - dist/affiche.pdf
 
   clean:
     desc: "Supprime les fichiers générés (PDF, TEX, LOG, AUX, etc.)"
     cmds:
-      - rm -f affiche.pdf affiche.tex
+      - rm -rf dist/ affiche.pdf *.tex *.aux
