@@ -1,0 +1,13 @@
+version: '3'
+tasks:
+  default:
+    cmds:
+      - task: build
+  build:
+    desc: "Compile le document RMarkdown en PDF au format paysage"
+    cmds:
+      - Rscript -e "rmarkdown::render('affiche.Rmd', output_format = 'pdf_document')"
+    sources:
+      - affiche.Rmd
+    generates:
+      - affiche.pdf
