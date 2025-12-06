@@ -112,6 +112,7 @@ knitr::asis_output(paste0(
   '  \\item NON SATISFAISANTE (E. coli $>$ 1000 NPP/100ml ou Entérocoques $>$ 200 NPP/100ml)',
   '\\end{itemize}',
   '\\vspace{1em}',
-  '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}}\\end{center}',
+ '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}} \\href{https://x.com/rastadidi}{x.com/rastadidi}\\end{center}',
   '}'
 ))
+	
