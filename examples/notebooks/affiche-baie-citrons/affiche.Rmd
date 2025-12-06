@@ -1,10 +1,12 @@
 ---
 output:
   pdf_document:
-    latex_engine: pdflatex
+    latex_engine: xelatex
     keep_tex: true
 geometry: landscape, a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm
 header-includes:
+  - \usepackage{fontspec}
+  - \setmainfont{DejaVu Sans}
   - \usepackage[table]{xcolor}
   - \usepackage{graphicx}
   - \pagestyle{empty}
@@ -40,9 +42,9 @@ col_flag <- if(is.na(etat_resume)) {
 }
 # Triangle ANSI pointe vers la droite
 knitr::asis_output(paste0(
-  "\\begin{center}",
-  "\\textcolor{", col_flag, "}{\\fontsize{240}{240}\\selectfont $\\blacktriangleright$}",
-  "\\end{center}"
+	"\\begin{center}",
+	"\\textcolor{", col_flag, "}{\\fontsize{120}{120}\\selectfont $\\blacktriangleright$}",
+	"\\end{center}"
 ))
 ```
 
@@ -112,7 +114,7 @@ knitr::asis_output(paste0(
   '  \\item NON SATISFAISANTE (E. coli $>$ 1000 NPP/100ml ou Entérocoques $>$ 200 NPP/100ml)',
   '\\end{itemize}',
   '\\vspace{1em}',
- '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}} \\href{https://x.com/rastadidi}{x.com/rastadidi}\\end{center}',
+ '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}} \\textbf{𝕏}~\\href{https://x.com/rastadidi}{x.com/rastadidi}\\end{center}',
   '}'
 ))
 	
