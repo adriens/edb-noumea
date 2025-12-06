@@ -1,0 +1,117 @@
+---
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    keep_tex: true
+geometry: landscape, a4paper, left=2cm, right=2cm, top=2cm, bottom=2cm
+header-includes:
+  - \usepackage[table]{xcolor}
+  - \usepackage{graphicx}
+  - \pagestyle{empty}
+---
+
+\begin{center}
+{\bfseries\fontsize{22}{26}\selectfont SURVEILLANCE DE LA QUALITÉ DES EAUX DE BAIGNADE DE LA BAIE DES CITRONS}
+\end{center}
+
+
+\raggedright
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=8, fig.height=3, mar=c(0,0,0,0)}
+# Get global bathing status from resume.csv
+url_resume <- "https://raw.githubusercontent.com/adriens/edb-noumea-data/refs/heads/main/data/resume.csv"
+data_resume <- read.csv(url_resume, sep = ";", fileEncoding = "UTF-8")
+ligne_resume <- grep("Plage de la baie des Citrons", data_resume$plage.etat_sanitaire)
+if(length(ligne_resume) > 0) {
+	etat_resume <- strsplit(as.character(data_resume$plage.etat_sanitaire[ligne_resume]), ",")[[1]][2]
+} else {
+	etat_resume <- NA
+}
+# Choose color
+col_flag <- if(is.na(etat_resume)) {
+	"grey"
+} else if(grepl("Baignade autorisée", etat_resume, ignore.case=TRUE)) {
+	"blue"
+} else if(grepl("Baignade déconseillée", etat_resume, ignore.case=TRUE)) {
+	"yellow"
+} else if(grepl("interdite|non satisfaisante", etat_resume, ignore.case=TRUE)) {
+	"red"
+} else {
+	"grey"
+}
+# Triangle ANSI pointe vers la droite
+knitr::asis_output(paste0(
+  "\\begin{center}",
+  "\\textcolor{", col_flag, "}{\\fontsize{240}{240}\\selectfont $\\blacktriangleright$}",
+  "\\end{center}"
+))
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+if (!requireNamespace("kableExtra", quietly = TRUE)) {
+	install.packages("kableExtra")
+}
+library(kableExtra)
+url_resume <- "https://raw.githubusercontent.com/adriens/edb-noumea-data/refs/heads/main/data/resume.csv"
+data_resume <- read.csv(url_resume, sep = ";", fileEncoding = "UTF-8")
+ligne_resume <- grep("Plage de la baie des Citrons", data_resume$plage.etat_sanitaire)
+if(length(ligne_resume) > 0) {
+	etat_resume <- strsplit(as.character(data_resume$plage.etat_sanitaire[ligne_resume]), ",")[[1]][2]
+	knitr::asis_output(paste0("\\begin{center}\\bfseries\\fontsize{16}{18}\\selectfont", etat_resume, "\\end{center}"))
+} else {
+	knitr::asis_output("\\begin{center}\\bfseries\\fontsize{16}{18}\\selectfont Données non disponibles\\end{center}")
+}
+```
+
+
+\noindent
+
+\begin{itemize}
+	\item[\textcolor{blue}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Bleu : SATISFAISANTE
+	\item[\textcolor{yellow}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Jaune : MOYENNE (baignade déconseillée)
+	\item[\textcolor{red}{\fontsize{1}{1}\selectfont $\blacktriangleright$}] Rouge : NON SATISFAISANTE (baignade interdite)
+\end{itemize}
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+url <- "https://raw.githubusercontent.com/adriens/edb-noumea-data/refs/heads/main/data/details.csv"
+data <- read.csv(url, sep = ",", fileEncoding = "UTF-8")
+filtered <- subset(data, site == "PLAGE DE LA BAIE DES CITRONS")
+if(nrow(filtered) > 0) {
+	# Remove columns 'site', 'point_de_prelevement', 'id_point_prelevement'
+	filtered_display <- filtered[, !(names(filtered) %in% c('site', 'point_de_prelevement', 'id_point_prelevement'))]
+	# Merge 'date' and 'heure' into 'Date et heure'
+	date_heure <- paste(filtered_display$date, filtered_display$heure)
+	filtered_display$date <- NULL
+	filtered_display$heure <- NULL
+	names(filtered_display)[names(filtered_display) == 'desc_point_prelevement'] <- 'Point de prélèvement'
+	names(filtered_display)[names(filtered_display) == 'e_coli_npp_100ml'] <- 'E. coli (NPP/100ml)'
+	names(filtered_display)[names(filtered_display) == 'enterocoques_npp_100ml'] <- 'Entérocoques (NPP/100ml)'
+	names(filtered_display)[names(filtered_display) == 'E. coli (NPP/100ml)'] <- 'Escherichia coli (NPP/100ml)'
+	# Add 'Date et heure' as first column
+	filtered_display <- cbind('Date et heure' = date_heure, filtered_display)
+	# Reorder columns: 'Date et heure', 'Point de prélèvement', then the rest
+	col_names <- names(filtered_display)
+	reordered <- c('Date et heure', 'Point de prélèvement', setdiff(col_names, c('Date et heure', 'Point de prélèvement')))
+	filtered_display <- filtered_display[, reordered]
+	# Set column names in bold for LaTeX
+	colnames(filtered_display) <- paste0("\\textbf{", colnames(filtered_display), "}")
+	knitr::asis_output(knitr::kable(filtered_display, format = "latex", escape = FALSE, booktabs = TRUE) %>%
+		kableExtra::kable_styling(latex_options = c("scale_down"), font_size = 12, full_width = TRUE))
+} else {
+	knitr::asis_output("Aucune donnée disponible pour la plage de la Baie des Citrons.")
+}
+
+# Ajout d'une note européenne après le tableau
+knitr::asis_output(paste0(
+  '\\vspace{1em}',
+  '\\noindent{\\footnotesize\\textit{Note : Les seuils européens pour la qualité des eaux de baignade sont définis par la Directive ',
+  '\\href{https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000887542}{2006/7/CE} : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000887542}}',
+  '{\\footnotesize',
+  '\\begin{itemize}',
+  '  \\item SATISFAISANTE (E. coli $\\leq$ 500 NPP/100ml et Entérocoques $\\leq$ 100 NPP/100ml)',
+  '  \\item MOYENNE (E. coli $\\leq$ 1000 NPP/100ml et Entérocoques $\\leq$ 200 NPP/100ml)',
+  '  \\item NON SATISFAISANTE (E. coli $>$ 1000 NPP/100ml ou Entérocoques $>$ 200 NPP/100ml)',
+  '\\end{itemize}',
+  '\\vspace{1em}',
+  '\\begin{center}\\footnotesize{\\href{https://github.com/adriens/edb-noumea}{https://github.com/adriens/edb-noumea}}\\end{center}',
+  '}'
+))
