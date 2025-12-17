@@ -21,7 +21,7 @@ def get_pdf_url():
     return get_latest_pdf_url()
 
 import pandas as pd
-import tabula
+import pdfplumber
 import requests
 import io
 from bs4 import BeautifulSoup
@@ -76,20 +76,29 @@ def get_detailed_results():
     pdf_file = io.BytesIO(response.content)
 
     try:
-        print("🔍 Extraction des tableaux du PDF...")
-        tables = tabula.read_pdf(pdf_file, pages='1', stream=True)
+        print("🔍 Extraction des tableaux du PDF avec pdfplumber...")
+        with pdfplumber.open(pdf_file) as pdf:
+            if not pdf.pages:
+                print("❌ Le PDF ne contient aucune page.")
+                return None
+            
+            first_page = pdf.pages[0]
+            tables = first_page.extract_tables()
+            
+            if not tables:
+                print("❌ Aucun tableau n'a été trouvé dans le PDF.")
+                return None
+            
+            print(f"✅ {len(tables)} tableau(x) trouvé(s) sur la première page.")
+            # Convertir le premier tableau en DataFrame
+            table_data = tables[0]
+            df = pd.DataFrame(table_data[1:], columns=table_data[0])
+            
     except Exception as e:
         print(f"❌ Une erreur est survenue lors de l'extraction des données du PDF.")
-        print("ℹ️  Cela peut être dû à l'absence de Java sur votre système, qui est requis par la bibliothèque 'tabula-py'.")
         print(f"   Erreur originale : {e}")
         return None
 
-    if not tables:
-        print("❌ Aucun tableau n'a été trouvé dans le PDF.")
-        return None
-
-    print(f"✅ {len(tables)} tableau(x) trouvé(s). Affichage du premier.")
-    df = tables[0]
     print("\n--- Aperçu du tableau extrait (toutes colonnes) ---")
     with pd.option_context('display.max_columns', None):
         print(df)
