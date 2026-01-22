@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import io
 
 # URL de la page à scraper
 URL = "https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade"
@@ -22,7 +23,7 @@ def get_water_quality():
 
     try:
         # pandas.read_html retourne une liste de tous les DataFrames trouvés dans le HTML
-        tables = pd.read_html(response.content, flavor='lxml')
+        tables = pd.read_html(io.BytesIO(response.content), flavor='lxml')
     except ValueError:
         print("Aucune table n'a été trouvée sur la page.")
         return None
