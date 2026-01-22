@@ -1,7 +1,8 @@
 [project]
 name = "edb-noumea"
-description = "Scraper robuste pour la qualité des eaux de baignade à Nouméa. Ajout export CSV automatique et détection améliorée des colonnes PDF."
-version = "0.3.3"
+description = "Scraper pour la qualité des eaux de baignade à Nouméa."
+readme = "README.md"
+version = "0.3.5"
 dependencies = [
     "requests",
     "beautifulsoup4",
