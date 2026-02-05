@@ -9,8 +9,7 @@ dependencies = [
     "pandas",
     "lxml",
     "pdfplumber",
-
-
+    "camelot-py[cv]",
     "matplotlib",
 ]
 

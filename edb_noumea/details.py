@@ -1,4 +1,9 @@
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+import camelot
+import tempfile
+import os
 
 @staticmethod
 def get_sites():
@@ -14,21 +19,15 @@ def get_sites():
         {"site": "PLAGE DU KUENDU BEACH", "plage": "Plage du Kuendu Beach", "gmaps_url": "https://maps.app.goo.gl/oGY6Hy4KCXJWxqfL9"},
     ]
     return pd.DataFrame(data)
+
 def get_pdf_url():
     """
     Alias public pour obtenir l'URL du dernier PDF d'analyses détaillées.
     """
     return get_latest_pdf_url()
 
-import pandas as pd
-import pdfplumber
-import requests
-import io
-from bs4 import BeautifulSoup
-
 # URL de la page officielle contenant le lien vers le PDF
 PAGE_URL = "https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade"
-
 
 def get_latest_pdf_url():
     """
@@ -58,7 +57,7 @@ def get_latest_pdf_url():
 def get_detailed_results():
     """
     Télécharge dynamiquement le PDF des résultats détaillés, en extrait le premier tableau
-    et le retourne sous forme de DataFrame pandas.
+    avec Camelot et le retourne sous forme de DataFrame pandas.
     """
     pdf_url = get_latest_pdf_url()
     if not pdf_url:
@@ -73,31 +72,49 @@ def get_detailed_results():
         print(f"❌ Erreur lors du téléchargement du fichier PDF : {e}")
         return None
 
-    pdf_file = io.BytesIO(response.content)
+    # Utiliser un fichier temporaire pour que Camelot puisse le lire
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+        temp_pdf.write(response.content)
+        temp_pdf_path = temp_pdf.name
 
     try:
-        print("🔍 Extraction des tableaux du PDF avec pdfplumber...")
-        with pdfplumber.open(pdf_file) as pdf:
-            if not pdf.pages:
-                print("❌ Le PDF ne contient aucune page.")
-                return None
+        print("🔍 Extraction des tableaux du PDF avec Camelot (flavor='stream')...")
+        tables = camelot.read_pdf(temp_pdf_path, flavor='stream', pages='1')
+        
+        if not tables:
+            print("❌ Aucun tableau n'a été trouvé dans le PDF avec Camelot.")
+            return None
             
-            first_page = pdf.pages[0]
-            tables = first_page.extract_tables()
-            
-            if not tables:
-                print("❌ Aucun tableau n'a été trouvé dans le PDF.")
-                return None
-            
-            print(f"✅ {len(tables)} tableau(x) trouvé(s) sur la première page.")
-            # Convertir le premier tableau en DataFrame
-            table_data = tables[0]
-            df = pd.DataFrame(table_data[1:], columns=table_data[0])
-            
+        print(f"✅ {len(tables)} tableau(x) trouvé(s) sur la première page.")
+        # Le DataFrame est directement accessible avec .df
+        df = tables[0].df
+
+        # The header is messy. Let's explicitly define the columns we expect.
+        new_columns = [
+            "Nom du site de baignade",
+            "Point de prélèvement",
+            "Date du prélèvement",
+            "Heure du prélèvement",
+            "Escherichia coli (NPP/100ml)",
+            "Entérocoques intestinaux (NPP/100ml)"
+        ]
+        
+        # The data from camelot has 6 columns, which matches our expected columns.
+        # Let's assign these names.
+        df.columns = new_columns
+        
+        # Now, we need to find where the actual data starts.
+        # It seems to start at index 6 in the camelot df.
+        df = df.iloc[6:].reset_index(drop=True)
+
     except Exception as e:
-        print(f"❌ Une erreur est survenue lors de l'extraction des données du PDF.")
+        print(f"❌ Une erreur est survenue lors de l'extraction des données du PDF avec Camelot.")
         print(f"   Erreur originale : {e}")
         return None
+    finally:
+        # Nettoyer le fichier temporaire
+        if 'temp_pdf_path' in locals() and os.path.exists(temp_pdf_path):
+            os.remove(temp_pdf_path)
 
     print("\n--- Aperçu du tableau extrait (toutes colonnes) ---")
     with pd.option_context('display.max_columns', None):
