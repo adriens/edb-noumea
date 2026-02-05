@@ -2,7 +2,7 @@
 name = "edb-noumea"
 description = "Scraper pour la qualité des eaux de baignade à Nouméa."
 readme = "README.md"
-version = "0.3.5"
+version = "0.3.7"
 dependencies = [
     "requests",
     "beautifulsoup4",

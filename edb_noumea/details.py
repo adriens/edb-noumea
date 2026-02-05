@@ -107,6 +107,32 @@ def get_detailed_results():
         # It seems to start at index 6 in the camelot df.
         df = df.iloc[6:].reset_index(drop=True)
 
+        # Apply ffill to all relevant columns after initial column assignment and before specific cleaning
+        # Replace empty strings with pd.NA first to ensure ffill works
+        for col in df.columns:
+            df[col] = df[col].replace('', pd.NA)
+        
+        # Now, forward-fill all columns. This assumes that empty cells in a data block should inherit from the previous non-empty cell.
+        df = df.ffill()
+
+        # Remove trailing informational rows
+        # Identify the patterns of the rows to be removed
+        unwanted_patterns = [
+            "La qualité des eaux de baignade est évaluée au",
+            "de présence de germes pathogènes",
+            "Suivant l'arrêté N°", # Added to catch more informational rows
+            "Indicateurs microbiologiques" # Added to catch more informational rows
+        ]
+        
+        # Filter out rows that contain these patterns in the 'Nom du site de baignade' or 'Point de prélèvement' column
+        # We check both columns as the content might shift
+        initial_row_count = df.shape[0]
+        df = df[~df['Nom du site de baignade'].fillna('').astype(str).str.contains('|'.join(unwanted_patterns), case=False, na=False)]
+        df = df[~df['Point de prélèvement'].fillna('').astype(str).str.contains('|'.join(unwanted_patterns), case=False, na=False)]
+        
+        if df.shape[0] < initial_row_count:
+            print(f"Removed {initial_row_count - df.shape[0]} informational rows.")
+
     except Exception as e:
         print(f"❌ Une erreur est survenue lors de l'extraction des données du PDF avec Camelot.")
         print(f"   Erreur originale : {e}")
@@ -171,11 +197,11 @@ def get_detailed_results():
 
     # Nettoyer et convertir les colonnes e_coli_npp_100ml et enterocoques_npp_100ml
     if "e_coli_npp_100ml" in cleaned_df.columns:
-        cleaned_df["e_coli_npp_100ml"] = cleaned_df["e_coli_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
+        cleaned_df["e_coli_npp_100ml"] = cleaned_df["e_coli_npp_100ml"].astype(str).str.replace(" ", "", regex=False).str.replace(r"<\s*10", "10", regex=True)
         cleaned_df["e_coli_npp_100ml"] = pd.to_numeric(cleaned_df["e_coli_npp_100ml"], errors="coerce").astype('Int64')
 
     if "enterocoques_npp_100ml" in cleaned_df.columns:
-        cleaned_df["enterocoques_npp_100ml"] = cleaned_df["enterocoques_npp_100ml"].astype(str).str.replace(r"<\s*10", "10", regex=True)
+        cleaned_df["enterocoques_npp_100ml"] = cleaned_df["enterocoques_npp_100ml"].astype(str).str.replace(" ", "", regex=False).str.replace(r"<\s*10", "10", regex=True)
         cleaned_df["enterocoques_npp_100ml"] = pd.to_numeric(cleaned_df["enterocoques_npp_100ml"], errors="coerce").astype('Int64')
 
     # Convertir la colonne 'date' en datetime (format jour/mois/année)
