@@ -12,6 +12,10 @@ header-includes:
   - \pagestyle{empty}
 ---
 
+```{r setup, include=FALSE}
+.libPaths(c("~/R/library", .libPaths()))
+```
+
 \begin{center}
 {\bfseries\fontsize{22}{26}\selectfont SURVEILLANCE DE LA QUALITÉ DES EAUX DE BAIGNADE DE LA BAIE DES CITRONS - NOUMEA}
 \end{center}
@@ -30,7 +34,7 @@ if(length(ligne_resume) > 0) {
 }
 # Choose color
 col_flag <- if(is.na(etat_resume)) {
-	"grey"
+	"gray"
 } else if(grepl("Baignade autorisée", etat_resume, ignore.case=TRUE)) {
 	"blue"
 } else if(grepl("Baignade déconseillée", etat_resume, ignore.case=TRUE)) {
@@ -38,7 +42,7 @@ col_flag <- if(is.na(etat_resume)) {
 } else if(grepl("interdite|non satisfaisante", etat_resume, ignore.case=TRUE)) {
 	"red"
 } else {
-	"grey"
+	"gray"
 }
 # Triangle ANSI pointe vers la droite
 knitr::asis_output(paste0(
