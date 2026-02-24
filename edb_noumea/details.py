@@ -42,8 +42,13 @@ def get_latest_pdf_url():
         print(f"❌ Impossible de récupérer la page officielle : {e}")
         return None
     soup = BeautifulSoup(resp.text, "lxml")
-    # Chercher le premier lien PDF dans la page
-    link = soup.find("a", href=lambda h: h and h.endswith(".pdf"))
+    # Chercher tous les liens PDF dans la page et prendre le dernier (résultats d'analyses)
+    links = soup.find_all("a", href=lambda h: h and h.endswith(".pdf"))
+    if not links:
+        print("❌ Aucun lien PDF trouvé sur la page.")
+        return None
+    # Prendre le dernier PDF qui contient les résultats d'analyses (pas l'arrêté)
+    link = links[-1]
     if not link:
         print("❌ Aucun lien PDF trouvé sur la page.")
         return None
