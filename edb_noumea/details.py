@@ -138,6 +138,11 @@ def get_detailed_results():
         if df.shape[0] < initial_row_count:
             print(f"Removed {initial_row_count - df.shape[0]} informational rows.")
 
+        # Nettoyage final : supprimer les lignes qui n'ont pas de point de prélèvement ou de date
+        # Cela permet d'éliminer les lignes vides ou les restes d'en-tête mal extraits
+        df = df.dropna(subset=['Point de prélèvement', 'Date du prélèvement'], how='all')
+        df = df[df['Point de prélèvement'].fillna('').str.strip() != '']
+
     except Exception as e:
         print(f"❌ Une erreur est survenue lors de l'extraction des données du PDF avec Camelot.")
         print(f"   Erreur originale : {e}")
