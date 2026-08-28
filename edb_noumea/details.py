@@ -5,6 +5,8 @@ import camelot
 import tempfile
 import os
 
+from ._http import get_with_retry
+
 @staticmethod
 def get_sites():
     """
@@ -36,8 +38,7 @@ def get_latest_pdf_url():
     print(f"🔗 Recherche du lien PDF sur {PAGE_URL} ...")
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
     try:
-        resp = requests.get(PAGE_URL, headers=headers)
-        resp.raise_for_status()
+        resp = get_with_retry(PAGE_URL, headers=headers)
     except Exception as e:
         print(f"❌ Impossible de récupérer la page officielle : {e}")
         return None
@@ -70,8 +71,7 @@ def get_detailed_results():
     print(f"📥 Téléchargement du PDF depuis {pdf_url} ...")
     try:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-        response = requests.get(pdf_url, headers=headers)
-        response.raise_for_status()
+        response = get_with_retry(pdf_url, headers=headers, timeout=30)
         print("✅ Téléchargement terminé.")
     except requests.exceptions.RequestException as e:
         print(f"❌ Erreur lors du téléchargement du fichier PDF : {e}")

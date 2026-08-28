@@ -2,6 +2,8 @@ import requests
 import pandas as pd
 import io
 
+from ._http import get_with_retry
+
 # URL de la page à scraper
 URL = "https://www.noumea.nc/noumea-pratique/salubrite-publique/qualite-eaux-baignade"
 
@@ -11,12 +13,9 @@ def get_water_quality():
     et les retourne dans un DataFrame pandas en lisant directement les tables HTML.
     """
     try:
-        # Effectuer la requête HTTP pour obtenir le contenu de la page
         # Ajouter un header User-Agent pour simuler un navigateur
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-        response = requests.get(URL, headers=headers)
-        # Lancer une exception si la requête a échoué
-        response.raise_for_status()
+        response = get_with_retry(URL, headers=headers)
     except requests.exceptions.RequestException as e:
         print(f"Erreur lors de la requête HTTP : {e}")
         return None
